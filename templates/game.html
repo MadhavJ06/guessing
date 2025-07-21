@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QUIZZZY</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            font-weight: 300;
+            opacity: 0.9;
+        }
+
+        .question-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .question-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        .question-number {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .question-date {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: center;
+            padding: 15px;
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            color: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(116, 185, 255, 0.3);
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+            color: #555;
+            margin-bottom: 25px;
+            text-align: center;
+            font-weight: 400;
+        }
+
+        .options {
+            display: grid;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .option {
+            background: linear-gradient(135deg, #ffeaa7, #fdcb6e);
+            border: none;
+            padding: 15px 20px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #2d3436;
+        }
+
+        .option:hover {
+            background: linear-gradient(135deg, #fdcb6e, #e17055);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(253, 203, 110, 0.4);
+        }
+
+        .option.selected {
+            background: linear-gradient(135deg, #00b894, #00a085);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 120px;
+        }
+
+        .btn-check {
+            background: linear-gradient(135deg, #00b894, #00a085);
+            color: white;
+        }
+
+        .btn-check:hover {
+            background: linear-gradient(135deg, #00a085, #008f72);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 184, 148, 0.4);
+        }
+
+        .btn-reveal {
+            background: linear-gradient(135deg, #e17055, #d63031);
+            color: white;
+        }
+
+        .btn-reveal:hover {
+            background: linear-gradient(135deg, #d63031, #c0392b);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(225, 112, 85, 0.4);
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            font-weight: 500;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+        }
+
+        .result.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .result.correct {
+            background: linear-gradient(135deg, #00b894, #00a085);
+            color: white;
+        }
+
+        .result.incorrect {
+            background: linear-gradient(135deg, #e17055, #d63031);
+            color: white;
+        }
+
+        .result.revealed {
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            color: white;
+        }
+
+        .kitten-image {
+            max-width: 200px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 15px;
+            margin: 15px auto;
+            display: block;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            transition: opacity 0.3s ease;
+            opacity: 1;
+        }
+
+        .kitten-image[src=""] {
+            opacity: 0;
+        }
+
+        .game-progress {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .progress-bar {
+            background: #e0e0e0;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            background: linear-gradient(135deg, #00b894, #00a085);
+            height: 100%;
+            transition: width 0.5s ease;
+            border-radius: 4px;
+        }
+
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .question-card {
+                padding: 20px;
+            }
+            
+            .question-date {
+                font-size: 1.4rem;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>QUIZZZZY💕</h1>
+            <p>I made a QUIZ but NOT FOR NEET HAHAHAHA</p>
+        </div>
+
+        <div class="game-progress">
+            <h3>Progress: <span id="progress-text">0/{{ questions|length }}</span></h3>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+            </div>
+        </div>
+
+        {% for question in questions %}
+        <div class="question-card" id="question-{{ question.id }}">
+            <div class="question-number">{{ question.id }}</div>
+            <div class="question-date">{{ question.date }}</div>
+            <p class="question-text">What special moment happened on this date? 💝</p>
+            
+            <div class="options">
+                {% for option in question.options %}
+                <button class="option" onclick="selectOption({{ question.id }}, '{{ option|e }}', this)">
+                    {{ option }}
+                </button>
+                {% endfor %}
+            </div>
+            
+            <div class="action-buttons">
+                <button class="btn btn-check" onclick="checkAnswer({{ question.id }})">
+                    Check Answer
+                </button>
+                <button class="btn btn-reveal" onclick="revealAnswer({{ question.id }})">
+                    Reveal Answer
+                </button>
+            </div>
+            
+            <div class="result" id="result-{{ question.id }}"></div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <script>
+        let selectedAnswers = {};
+        let completedQuestions = 0;
+        const totalQuestions = {{ questions|length }};
+
+        function selectOption(questionId, answer, element) {
+            // Remove selected class from all options in this question
+            const questionCard = document.getElementById('question-' + questionId);
+            const options = questionCard.querySelectorAll('.option');
+            options.forEach(opt => opt.classList.remove('selected'));
+            
+            // Add selected class to clicked option
+            element.classList.add('selected');
+            
+            // Store the selected answer
+            selectedAnswers[questionId] = answer;
+        }
+
+        async function checkAnswer(questionId) {
+            const selectedAnswer = selectedAnswers[questionId];
+            
+            if (!selectedAnswer) {
+                alert('Please select an answer first my love!');
+                return;
+            }
+
+            try {
+                const response = await fetch('/check_answer', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        question_id: questionId,
+                        answer: selectedAnswer
+                    })
+                });
+                
+                const data = await response.json();
+                showResult(questionId, data, data.correct ? 'correct' : 'incorrect');
+                
+                if (data.correct) {
+                    updateProgress();
+                }
+                
+            } catch (error) {
+                alert('Something went wrong! 😅');
+            }
+        }
+
+        async function revealAnswer(questionId) {
+            try {
+                const response = await fetch('/reveal_answer', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        question_id: questionId
+                    })
+                });
+                
+                const data = await response.json();
+                showResult(questionId, data, 'revealed');
+                updateProgress();
+                
+            } catch (error) {
+                alert('Something went wrong! 😅');
+            }
+        }
+
+        function showResult(questionId, data, type) {
+            const resultDiv = document.getElementById('result-' + questionId);
+            
+            let imageSrc = '';
+            if (type === 'correct' || type === 'revealed') {
+                // Always use kitten1.jpeg for correct/revealed answers
+                imageSrc = '/static/images/kitten1.jpeg';
+            } else if (type === 'incorrect') {
+                // Always use kitten_cage.jpg for wrong answers
+                imageSrc = '/static/images/kitten_cage.jpg';
+            }
+            
+            console.log('Trying to load image:', imageSrc);
+            
+            resultDiv.innerHTML = 
+                '<img src="' + imageSrc + '" alt="Kitten" class="kitten-image" ' +
+                'onload="console.log(\'Image loaded successfully: \' + this.src)" ' +
+                'onerror="console.log(\'Image FAILED to load: \' + this.src); this.style.display=\'none\';">' +
+                '<p>' + data.message + '</p>';
+            
+            resultDiv.className = 'result ' + type + ' show';
+            
+            // Only disable buttons after correct answer or reveal (when question is truly completed)
+            if (type === 'correct' || type === 'revealed') {
+                const questionCard = document.getElementById('question-' + questionId);
+                const buttons = questionCard.querySelectorAll('.btn');
+                buttons.forEach(btn => btn.disabled = true);
+            }
+        }
+
+        function updateProgress() {
+            completedQuestions++;
+            const percentage = (completedQuestions / totalQuestions) * 100;
+            
+            document.getElementById('progress-text').textContent = completedQuestions + '/' + totalQuestions;
+            document.getElementById('progress-fill').style.width = percentage + '%';
+            
+            if (completedQuestions === totalQuestions) {
+                setTimeout(() => {
+                    alert('Congratulations! Now you know all the important dates hehe! 🎉💕');
+                }, 500);
+            }
+        }
+
+        // Add some sparkle effects
+        function createSparkle() {
+            const sparkle = document.createElement('div');
+            sparkle.innerHTML = '✨';
+            sparkle.style.position = 'fixed';
+            sparkle.style.left = Math.random() * window.innerWidth + 'px';
+            sparkle.style.top = Math.random() * window.innerHeight + 'px';
+            sparkle.style.pointerEvents = 'none';
+            sparkle.style.fontSize = '20px';
+            sparkle.style.zIndex = '1000';
+            sparkle.style.animation = 'sparkle 2s ease-out forwards';
+            
+            document.body.appendChild(sparkle);
+            
+            setTimeout(function() {
+                sparkle.remove();
+            }, 2000);
+        }
+
+        // Add sparkle animation CSS
+        const style = document.createElement('style');
+        style.textContent = 
+            '@keyframes sparkle {' +
+                '0% { opacity: 1; transform: scale(0) rotate(0deg); }' +
+                '50% { opacity: 1; transform: scale(1) rotate(180deg); }' +
+                '100% { opacity: 0; transform: scale(0) rotate(360deg); }' +
+            '}';
+        document.head.appendChild(style);
+
+        // Create sparkles periodically
+        setInterval(createSparkle, 3000);
+    </script>
+</body>
+</html>
